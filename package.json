@@ -1,0 +1,76 @@
+{
+  "name": "file-summarizer",
+  "displayName": "file-summarizer",
+  "description": "LLM based file summarization",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.101.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "fileSummarizer.summarize",
+        "title": "FileSummarizer",
+        "category": "FileSummarizer"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "fileSummarizer.summarize",
+          "when": "resourceExtname =~ /\\.(js|ts|py|java|cpp|c|cs|php|rb|go|rs|swift|kt|scala|dart|r|sql|html|css|scss|sass|less|json|xml|yaml|yml|md|txt)$/",
+          "group": "navigation@1"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "fileSummarizer.summarize",
+          "when": "resourceExtname =~ /\\.(js|ts|py|java|cpp|c|cs|php|rb|go|rs|swift|kt|scala|dart|r|sql|html|css|scss|sass|less|json|xml|yaml|yml|md|txt)$/",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FileSummarizer",
+      "properties": {
+        "fileSummarizer.model": {
+          "type": "string",
+          "default": "llama3.2",
+          "description": "LLM model to use for summarization",
+          "enum": [
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4-turbo"
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.101.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "ai": "^4.3.16",
+    "ollama-ai-provider": "^1.2.0"
+  }
+}
