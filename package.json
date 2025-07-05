@@ -6,6 +6,10 @@
   "engines": {
     "vscode": "^1.101.0"
   },
+  "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
+  ],
   "categories": [
     "Other"
   ],
@@ -16,6 +20,18 @@
         "command": "fileSummarizer.summarize",
         "title": "FileSummarizer",
         "category": "FileSummarizer"
+      },
+      {
+        "command": "ai-autocomplete.enable",
+        "title": "Enable AI Auto Complete"
+      },
+      {
+        "command": "ai-autocomplete.disable",
+        "title": "Disable AI Auto Complete"
+      },
+      {
+        "command": "ai-autocomplete.accept",
+        "title": "Accept AI Suggestion"
       }
     ],
     "menus": {
@@ -46,6 +62,16 @@
             "gpt-4",
             "gpt-4-turbo"
           ]
+        },
+        "aiAutoComplete.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable AI auto completion"
+        },
+        "aiAutoComplete.debounceMs": {
+          "type": "number",
+          "default": 300,
+          "description": "Debounce time in milliseconds before triggering completion"
         }
       }
     }

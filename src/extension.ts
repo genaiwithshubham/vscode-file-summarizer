@@ -3,76 +3,194 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { createOllama } from 'ollama-ai-provider';
 import { generateText } from 'ai';
+import { AICompletionProviderV1 } from './providers/ai-completion-v1';
+import { AICompletionProviderV2 } from './providers/ai-completion-v2';
 
 const ollama = createOllama({
-	baseURL: 'http://localhost:11434/api',
+    baseURL: 'http://localhost:11434/api',
 });
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('File Summarizer extension is now active!');
+    console.log('File Summarizer extension is now active!');
 
-	const disposable = vscode.commands.registerCommand('fileSummarizer.summarize', async (uri: vscode.Uri) => {
-		try {
-			const fileUri = uri || vscode.window.activeTextEditor?.document.uri;
+    const disposable = vscode.commands.registerCommand('fileSummarizer.summarize', async (uri: vscode.Uri) => {
+        try {
+            const fileUri = uri || vscode.window.activeTextEditor?.document.uri;
 
-			if (!fileUri) {
-				vscode.window.showErrorMessage('No file selected');
-				return;
-			}
+            if (!fileUri) {
+                vscode.window.showErrorMessage('No file selected');
+                return;
+            }
 
-			await vscode.window.withProgress({
-				location: vscode.ProgressLocation.Notification,
-				title: "Summarizing file...",
-				cancellable: false
-			}, async (progress) => {
-				try {
-					const fileContent = await fs.promises.readFile(fileUri.fsPath, 'utf8');
-					const fileName = path.basename(fileUri.fsPath);
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: "Summarizing file...",
+                cancellable: false
+            }, async (progress) => {
+                try {
+                    const fileContent = await fs.promises.readFile(fileUri.fsPath, 'utf8');
+                    const fileName = path.basename(fileUri.fsPath);
 
-					progress.report({ increment: 25, message: "Reading file..." });
+                    progress.report({ increment: 25, message: "Reading file..." });
 
-					const config = vscode.workspace.getConfiguration('fileSummarizer');
-					const model = config.get<string>('model', 'llama3.2');
+                    const config = vscode.workspace.getConfiguration('fileSummarizer');
+                    const model = config.get<string>('model', 'llama3.2');
 
-					progress.report({ increment: 25, message: "Calling LLM..." });
+                    progress.report({ increment: 25, message: "Calling LLM..." });
 
-					const summary = await generateSummary(fileContent, fileName, model);
+                    const summary = await generateSummary(fileContent, fileName, model);
 
-					progress.report({ increment: 25, message: "Generating webview..." });
+                    progress.report({ increment: 25, message: "Generating webview..." });
 
-					// Create and show webview
-					const panel = vscode.window.createWebviewPanel(
-						'fileSummary',
-						`Summary: ${fileName}`,
-						vscode.ViewColumn.Beside,
-						{
-							enableScripts: true,
-							retainContextWhenHidden: true
-						}
-					);
+                    // Create and show webview
+                    const panel = vscode.window.createWebviewPanel(
+                        'fileSummary',
+                        `Summary: ${fileName}`,
+                        vscode.ViewColumn.Beside,
+                        {
+                            enableScripts: true,
+                            retainContextWhenHidden: true
+                        }
+                    );
 
-					panel.webview.html = getWebviewContent(fileName, summary, fileUri.fsPath);
+                    panel.webview.html = getWebviewContent(fileName, summary, fileUri.fsPath);
 
-					progress.report({ increment: 25, message: "Complete!" });
+                    progress.report({ increment: 25, message: "Complete!" });
 
-				} catch (error) {
-					console.error('Error summarizing file:', error);
-					vscode.window.showErrorMessage(`Error summarizing file: ${error instanceof Error ? error.message : 'Unknown error'}`);
-				}
-			});
+                } catch (error) {
+                    console.error('Error summarizing file:', error);
+                    vscode.window.showErrorMessage(`Error summarizing file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                }
+            });
 
-		} catch (error) {
-			console.error('Error in summarize command:', error);
-			vscode.window.showErrorMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-		}
-	});
+        } catch (error) {
+            console.error('Error in summarize command:', error);
+            vscode.window.showErrorMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+    });
 
-	context.subscriptions.push(disposable);
+    // const provider = new AICompletionProviderV1();
+
+    // // Register completion provider for TypeScript and TSX files
+    // const tsProvider = vscode.languages.registerCompletionItemProvider(
+    //     { scheme: 'file', language: 'typescript' },
+    //     provider,
+    //     '.', // Trigger on dot
+    //     ' ', // Trigger on space
+    //     '\n' // Trigger on new line
+    // );
+
+    // const tsxProvider = vscode.languages.registerCompletionItemProvider(
+    //     { scheme: 'file', language: 'typescriptreact' },
+    //     provider,
+    //     '.', // Trigger on dot
+    //     ' ', // Trigger on space
+    //     '\n' // Trigger on new line
+    // );
+
+    // // Register commands
+    // const enableCommand = vscode.commands.registerCommand('ai-autocomplete.enable', () => {
+    //     vscode.workspace.getConfiguration('aiAutoComplete').update('enabled', true, true);
+    //     vscode.window.showInformationMessage('AI Auto Complete enabled');
+    // });
+
+    // const disableCommand = vscode.commands.registerCommand('ai-autocomplete.disable', () => {
+    //     vscode.workspace.getConfiguration('aiAutoComplete').update('enabled', false, true);
+    //     vscode.window.showInformationMessage('AI Auto Complete disabled');
+    // });
+
+    // // Add status bar item
+    // const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    // statusBarItem.text = '$(robot) AI Complete';
+    // statusBarItem.tooltip = 'AI Auto Complete is active';
+    // statusBarItem.show();
+
+    // // Update status bar based on configuration
+    // const updateStatusBar = () => {
+    //     const config = vscode.workspace.getConfiguration('aiAutoComplete');
+    //     const enabled = config.get('enabled', true);
+    //     statusBarItem.text = enabled ? '$(robot) AI Complete' : '$(robot) AI Complete (disabled)';
+    //     statusBarItem.color = enabled ? undefined : 'yellow';
+    // };
+
+    // // Listen for configuration changes
+    // const configListener = vscode.workspace.onDidChangeConfiguration(e => {
+    //     if (e.affectsConfiguration('aiAutoComplete')) {
+    //         updateStatusBar();
+    //     }
+    // });
+
+    // updateStatusBar();
+
+     const provider = new AICompletionProviderV2();
+
+    // Register inline completion provider for TypeScript and TSX files
+    const tsProvider = vscode.languages.registerInlineCompletionItemProvider(
+        { scheme: 'file', language: 'typescript' },
+        provider
+    );
+
+    const tsxProvider = vscode.languages.registerInlineCompletionItemProvider(
+        { scheme: 'file', language: 'typescriptreact' },
+        provider
+    );
+
+    // Register commands
+    const enableCommand = vscode.commands.registerCommand('ai-autocomplete.enable', () => {
+        vscode.workspace.getConfiguration('aiAutoComplete').update('enabled', true, true);
+        vscode.window.showInformationMessage('AI Auto Complete enabled');
+    });
+
+    const disableCommand = vscode.commands.registerCommand('ai-autocomplete.disable', () => {
+        vscode.workspace.getConfiguration('aiAutoComplete').update('enabled', false, true);
+        vscode.window.showInformationMessage('AI Auto Complete disabled');
+    });
+
+    // Register accept command (triggered when user accepts inline completion)
+    const acceptCommand = vscode.commands.registerCommand('ai-autocomplete.accept', () => {
+        // This command is triggered when the inline completion is accepted
+        // The actual insertion is handled by VS Code's inline completion system
+        console.log('AI suggestion accepted');
+    });
+
+    // Add status bar item
+    const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    statusBarItem.text = '$(robot) AI Complete';
+    statusBarItem.tooltip = 'AI Auto Complete is active';
+    statusBarItem.show();
+
+    // Update status bar based on configuration
+    const updateStatusBar = () => {
+        const config = vscode.workspace.getConfiguration('aiAutoComplete');
+        const enabled = config.get('enabled', true);
+        statusBarItem.text = enabled ? '$(robot) AI Complete' : '$(robot) AI Complete (disabled)';
+        statusBarItem.color = enabled ? undefined : 'yellow';
+    };
+
+    // Listen for configuration changes
+    const configListener = vscode.workspace.onDidChangeConfiguration(e => {
+        if (e.affectsConfiguration('aiAutoComplete')) {
+            updateStatusBar();
+        }
+    });
+
+    updateStatusBar();
+
+
+    context.subscriptions.push(disposable,
+        tsProvider,
+        tsxProvider,
+        enableCommand,
+        disableCommand,
+        acceptCommand,
+        statusBarItem,
+        configListener
+    );
 }
 
 async function generateSummary(fileContent: string, fileName: string, model: string): Promise<string> {
-	try {
-		const prompt = `Please provide a comprehensive summary of this code file. Include:
+    try {
+        const prompt = `Please provide a comprehensive summary of this code file. Include:
 		1. Purpose and main functionality
 		2. Key components, classes, or functions
 		3. Dependencies and imports
@@ -83,19 +201,19 @@ async function generateSummary(fileContent: string, fileName: string, model: str
 		Content:
 		${fileContent}`;
 
-		const { text } = await generateText({
-			model: ollama(model),
-			prompt: prompt
-		});
+        const { text } = await generateText({
+            model: ollama(model),
+            prompt: prompt
+        });
 
-		return text;
-	} catch (error) {
-		throw error;
-	}
+        return text;
+    } catch (error) {
+        throw error;
+    }
 }
 
 function getWebviewContent(fileName: string, summary: string, filePath: string): string {
-	return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
