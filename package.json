@@ -15,6 +15,25 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+        "activitybar": [
+            {
+                "id": "simpleChatViewSideBar",
+                "title": "Chat Sidebar",
+                "icon": "$(comment-discussion)"
+            }
+        ]
+    },
+    "views": {
+        "simpleChatViewSideBar": [
+            {
+                "id": "simpleChatExtension.webviewView",
+                "name": "Chat Webview View",
+                "type": "webview",
+                "icon": "$(comment-discussion)"
+            }
+        ]
+    },
     "commands": [
       {
         "command": "fileSummarizer.summarize",
@@ -56,6 +75,11 @@
       {
         "command": "customDiff.loadDiff",
         "title": "Load Custom Diff"
+      },
+       {
+        "command": "simpleChatExtension.openChat",
+        "title": "Open Chat",
+        "category": "Simple Chat"
       }
     ],
     "menus": {
@@ -85,6 +109,10 @@
         {
           "command": "customDiff.rejectAll",
           "when": "customDiff.hasChanges"
+        },
+        {
+          "command": "simpleChatExtension.openChat",
+          "title": "Simple Chat: Open Chat"
         }
       ]
     },
