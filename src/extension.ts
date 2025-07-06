@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { summaryCommandDisposable } from './commands/summary';
 import { aiCompletionAdvanced } from './commands/ai-completion-advanced';
+import { customDiff } from './commands/custom-diff';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -14,8 +15,11 @@ export function activate(context: vscode.ExtensionContext) {
         disposable.disableCommand,
         disposable.acceptCommand,
         disposable.statusBarItem,
-        disposable.configListener
+        disposable.configListener,
     );
+
+    customDiff(context);
+
 }
 
 export function deactivate() { }

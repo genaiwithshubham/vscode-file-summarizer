@@ -32,6 +32,30 @@
       {
         "command": "ai-autocomplete.accept",
         "title": "Accept AI Suggestion"
+      },
+      {
+        "command": "customDiff.acceptChange",
+        "title": "Accept Change"
+      },
+      {
+        "command": "customDiff.rejectChange",
+        "title": "Reject Change"
+      },
+      {
+        "command": "customDiff.viewDiff",
+        "title": "View Diff"
+      },
+      {
+        "command": "customDiff.acceptAll",
+        "title": "Accept All Changes"
+      },
+      {
+        "command": "customDiff.rejectAll",
+        "title": "Reject All Changes"
+      },
+      {
+        "command": "customDiff.loadDiff",
+        "title": "Load Custom Diff"
       }
     ],
     "menus": {
@@ -47,6 +71,20 @@
           "command": "fileSummarizer.summarize",
           "when": "resourceExtname =~ /\\.(js|ts|py|java|cpp|c|cs|php|rb|go|rs|swift|kt|scala|dart|r|sql|html|css|scss|sass|less|json|xml|yaml|yml|md|txt)$/",
           "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "customDiff.loadDiff",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "customDiff.acceptAll",
+          "when": "customDiff.hasChanges"
+        },
+        {
+          "command": "customDiff.rejectAll",
+          "when": "customDiff.hasChanges"
         }
       ]
     },
@@ -72,6 +110,16 @@
           "type": "number",
           "default": 300,
           "description": "Debounce time in milliseconds before triggering completion"
+        },
+        "customDiff.showLineNumbers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show line numbers in diff context"
+        },
+        "customDiff.maxContextLines": {
+          "type": "number",
+          "default": 3,
+          "description": "Maximum context lines to show in hover"
         }
       }
     }
